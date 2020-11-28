@@ -1,12 +1,14 @@
 package com.microservices.chapter3
 
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.concurrent.ConcurrentHashMap
 
 @RestController
 class CustomerController(private val customers: ConcurrentHashMap<Int, Customer>) {
     @GetMapping("/customer/{id}")
-    fun getCustomer(@PathVariable id: Int) = customers[id]
+    fun getCustomer(@PathVariable id: Int) = ResponseEntity(customers[id], HttpStatus.OK)
 
     @GetMapping("/customers")
     fun getCustomers(@RequestParam(required = false, defaultValue = "") nameFilter: String) =
