@@ -1,17 +1,21 @@
 package com.microservices.chapter4
 
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import reactor.core.publisher.Mono
 
 @RestController
 class CustomerController(private val customerService: CustomerService) {
     @GetMapping("/customer/{id}")
-    fun getCustomer(@PathVariable id: Int) = ResponseEntity.ok(customerService.getCustomer(id) as Customer)
+    fun getCustomer(@PathVariable id: Int) =
+            ResponseEntity.ok(customerService.getCustomer(id) as Mono<Customer>)
 
     @GetMapping("/customers")
     fun getCustomers(@RequestParam(required = false, defaultValue = "") nameFilter: String) =
-            customerService.searchCustomers(nameFilter)
+            ResponseEntity.ok(customerService.searchCustomers(nameFilter))
+
+    @PostMapping("/customer")
+    fun createCustomer(@RequestBody customerMono: Mono<Customer>) =
+            ResponseEntity(customerService.createCustomer(customerMono), HttpStatus.CREATED)
 }
